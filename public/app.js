@@ -525,9 +525,28 @@ $('#gExport').addEventListener('click', async () => {
   try {
     const r = await fetch('api/games/' + gameEdit.id + '/export', { headers: { 'X-Pin': pin } });
     if (!r.ok) throw new Error(t('err.http', r.status));
+    const blob = await r.blob();
+    const name = (gameEdit.name.replace(/[^\w -]/g, '').trim() || 'profile') + '.binddeck';
+    // ahol a bongeszo engedi (gepen, az alkalmazasban), ki lehet valasztani, hova mentse
+    if (window.showSaveFilePicker) {
+      let handle;
+      try {
+        handle = await window.showSaveFilePicker({
+          suggestedName: name,
+          types: [{ description: 'BindDeck profile', accept: { 'application/octet-stream': ['.binddeck'] } }]
+        });
+      } catch (e) {
+        return; // megsem
+      }
+      const out = await handle.createWritable();
+      await out.write(blob);
+      await out.close();
+      return toast(t('game.exported'), true);
+    }
+    // kulonben (pl. telefonon) sima letoltes
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(await r.blob());
-    a.download = gameEdit.name.replace(/[^\w -]/g, '').trim() + '.binddeck';
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
   } catch (err) {
@@ -540,15 +559,15 @@ $('#impFile').addEventListener('change', async () => {
   const file = $('#impFile').files[0];
   $('#impFile').value = '';
   if (!file) return;
-  let body;
+  // a fajl nyersen megy fel, a szerver bontja ki es ellenorzi
   try {
-    body = JSON.parse(await file.text());
-    if (body.binddeck !== 1) throw new Error();
-  } catch (e) {
-    return toast(t('err.import'));
-  }
-  try {
-    await api('api/import', 'POST', body);
+    const r = await fetch('api/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream', 'X-Pin': pin, 'X-Client': clientId },
+      body: file
+    });
+    if (r.status === 400) return toast(t('err.import'));
+    if (!r.ok) throw new Error(t('err.http', r.status));
     await load();
     toast(t('game.imported'), true);
   } catch (err) {

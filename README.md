@@ -3,7 +3,7 @@
 Turn your phone into a customizable macro pad for your Windows PC.
 Open a page on your phone, tap a tile, and the PC receives the key press bound to it — as if you had pressed it on the keyboard.
 
-*powered by Z*
+*powered by Z* · [Discord community](https://discord.gg/UrsQ56ghQK)
 
 ## Features
 
@@ -14,7 +14,7 @@ Open a page on your phone, tap a tile, and the PC receives the key press bound t
 - **Images on tiles** – drop your own PNG / JPG / WebP files into the profile's image folder and pick them in the editor.
 - **Themes** – seven colors drive the whole look; save them as named color profiles.
 - **Selection highlight** – the last pressed tile in each group stays marked, toggles show on/off.
-- **Export / import** – a whole profile (tiles, colors, images) in a single `.binddeck` file.
+- **Export / import** – a whole profile (tiles, colors, size, images) in a single compressed `.binddeck` file; choose where to save it, share it, import it elsewhere exactly as it was.
 - **QR connect** – scan the code shown on the PC and the phone is connected.
 - **Live sync** – change something on the PC and every connected phone updates instantly, and the other way round.
 - **13 languages** – English, Hungarian, German, French, Spanish, Italian, Portuguese, Dutch, Polish, Czech, Romanian, Turkish, Russian.
@@ -56,6 +56,10 @@ File names may contain letters, digits, spaces, dots, dashes and underscores.
 ### Data location
 
 `%APPDATA%\BindDeck\data` – `data.json` (profiles), `kod.json` (your connect code), `images\` (tile images).
+
+## Community
+
+Share your profiles, get help and suggest features on the [BindDeck Discord](https://discord.gg/UrsQ56ghQK).
 
 ## Security
 

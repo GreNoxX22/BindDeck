@@ -6,6 +6,7 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
+const zlib = require('zlib');
 const { spawn } = require('child_process');
 const QRCode = require('qrcode');
 
@@ -214,8 +215,9 @@ function sendKeys(codes) {
 
 const app = express();
 const smallJson = express.json({ limit: '200kb' });
-const bigJson = express.json({ limit: '40mb' });
-app.use((req, res, next) => (req.path === '/api/import' ? bigJson : smallJson)(req, res, next));
+// az import a profilfajlt nyersen kapja (tomoritett), ezert ott nem JSON-kent olvassuk
+const rawFile = express.raw({ limit: '40mb', type: () => true });
+app.use((req, res, next) => (req.path === '/api/import' ? rawFile : smallJson)(req, res, next));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/kepek', express.static(IMGDIR));
 
@@ -346,11 +348,22 @@ app.get('/api/games/:id/export', (req, res) => {
       delete x.img;
     }
   });
-  res.json({ binddeck: 1, name: g.name, look: g.look, zoom: g.zoom || 100, tiles, images });
+  // a .binddeck fajl: gzip-pel tomoritett JSON
+  const file = zlib.gzipSync(Buffer.from(JSON.stringify({ binddeck: 1, name: g.name, look: g.look, zoom: g.zoom || 100, tiles, images })));
+  res.set('Content-Type', 'application/octet-stream').send(file);
 });
 
 app.post('/api/import', (req, res) => {
-  const b = req.body || {};
+  // tomoritett (gzip) es regi, sima JSON fajlt is elfogadunk
+  let b;
+  try {
+    let buf = req.body;
+    if (buf[0] === 0x1f && buf[1] === 0x8b) buf = zlib.gunzipSync(buf, { maxOutputLength: 80 * 1024 * 1024 });
+    b = JSON.parse(buf.toString('utf8'));
+  } catch (e) {
+    return res.status(400).json({ error: 'hibas fajl' });
+  }
+  if (!b || typeof b !== 'object') return res.status(400).json({ error: 'hibas fajl' });
   const name = cleanName(b.name);
   if (b.binddeck !== 1 || !name || !Array.isArray(b.tiles) || data.games.length >= 30) return res.status(400).json({ error: 'hibas fajl' });
   // elobb ellenorzunk, csak utana hozunk letre barmit

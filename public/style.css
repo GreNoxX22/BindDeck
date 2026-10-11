@@ -396,3 +396,6 @@ dialog .actions {
 }
 .lang-btns { grid-template-columns: 1fr 1fr; }
 #fRun:disabled { opacity: 0.6; }
+
+.links { margin: 0 0 4px; font-size: 14px; }
+.links a, .foot a { color: var(--accent); }
