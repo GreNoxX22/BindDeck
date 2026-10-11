@@ -1,0 +1,8 @@
+node_modules/
+dist/
+
+# personal data when run from source (node server.js)
+data.json
+kod.json
+kepek/
+images/

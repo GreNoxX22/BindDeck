@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#120b15">
+  <title>BindDeck</title>
+  <link rel="icon" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <h1>BindDeck</h1>
+    <select id="gameSel" class="game-sel" data-i18n-aria="game.profile"></select>
+    <button id="connBtn" class="icon-btn" type="button" data-i18n-aria="set.connect" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/></svg>
+    </button>
+    <button id="lookBtn" class="icon-btn" type="button" data-i18n-aria="set.title">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M19 7h1M4 12h3M13 12h7M4 17h11"/><circle cx="16" cy="7" r="2.4"/><circle cx="10" cy="12" r="2.4"/><circle cx="18" cy="17" r="2.4"/></svg>
+    </button>
+    <button id="editBtn" class="icon-btn" type="button" data-i18n-aria="edit">
+      <svg class="i-edit" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
+      <svg class="i-done" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+      <span id="editLabel" data-i18n="edit"></span>
+    </button>
+  </header>
+
+  <main id="grid" class="grid"></main>
+
+  <footer class="foot">BindDeck &middot; powered by Z</footer>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <dialog id="langDlg">
+    <form method="dialog">
+      <h2>Language / Nyelv / Sprache</h2>
+      <div id="langBtns" class="lang-btns"></div>
+    </form>
+  </dialog>
+
+  <!-- csak a gepen megnyitva erheto el (a fejlec telefon ikonja) -->
+  <dialog id="connDlg">
+    <form method="dialog" class="connect">
+      <h2 data-i18n="set.connect"></h2>
+      <div id="qr" class="qr"></div>
+      <p class="hint" data-i18n="set.connectHint"></p>
+      <p><span data-i18n="set.address"></span>: <b id="cUrl"></b></p>
+      <p><span data-i18n="set.code"></span>: <b id="cPin"></b></p>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button class="btn primary" type="submit" data-i18n="done"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <input id="impFile" type="file" accept=".binddeck,application/json" hidden>
+
+  <dialog id="pinDlg">
+    <form id="pinForm" method="dialog">
+      <h2 data-i18n="pin.title"></h2>
+      <p class="hint" data-i18n="pin.hint"></p>
+      <input id="pinInput" type="text" inputmode="numeric" autocomplete="off" maxlength="6" placeholder="000000" required>
+      <div class="actions">
+        <button class="btn primary" type="submit" data-i18n="pin.enter"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="gameDlg">
+    <form id="gameForm" method="dialog">
+      <h2 id="gameTitle"></h2>
+      <label class="field">
+        <span data-i18n="name"></span>
+        <input id="gName" type="text" maxlength="30" data-i18n-ph="game.ph" required>
+      </label>
+      <p id="gHint" class="hint small"></p>
+      <button id="gExport" class="btn capture" type="button" data-i18n="game.export"></button>
+      <div class="actions">
+        <button id="gDel" class="btn danger" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>
+          <span data-i18n="delete"></span>
+        </button>
+        <span class="spacer"></span>
+        <button id="gCancel" class="btn" type="button" data-i18n="cancel"></button>
+        <button class="btn primary" type="submit" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="lookDlg">
+    <form method="dialog">
+      <h2 data-i18n="set.title"></h2>
+
+      <label class="field">
+        <span data-i18n="set.lang"></span>
+        <select id="langSel"></select>
+      </label>
+
+      <label class="check">
+        <input type="checkbox" id="vib"> <span data-i18n="set.vibrate"></span>
+      </label>
+
+      <h3 id="lookTitle"></h3>
+
+      <label class="field">
+        <span data-i18n="look.profile"></span>
+        <select id="pSel"></select>
+      </label>
+
+      <div id="lookColors" class="colors"></div>
+
+      <label class="field">
+        <span><span data-i18n="look.size"></span>: <b id="zoomVal">100%</b> <span data-i18n="look.sizeNote"></span></span>
+        <input id="zoom" type="range" min="50" max="150" step="5" value="100">
+      </label>
+
+      <label class="field">
+        <span data-i18n="look.saveAs"></span>
+        <input id="pName" type="text" maxlength="30" data-i18n-ph="look.ph">
+      </label>
+
+      <div class="actions">
+        <button id="pDel" class="btn danger" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>
+          <span data-i18n="delete"></span>
+        </button>
+        <span class="spacer"></span>
+        <button id="pSave" class="btn" type="button" data-i18n="save"></button>
+        <button class="btn primary" type="submit" data-i18n="done"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="editDlg">
+    <form id="editForm" method="dialog">
+      <h2 id="editTitle"></h2>
+
+      <label class="field">
+        <span data-i18n="name"></span>
+        <input id="fName" type="text" maxlength="40" data-i18n-ph="tile.ph" required>
+      </label>
+
+      <div class="field" id="colorField">
+        <span data-i18n="color"></span>
+        <div id="fColors" class="swatches"></div>
+      </div>
+
+      <div class="field" id="imgField">
+        <span data-i18n="image"></span>
+        <div id="fImgs" class="imgs"></div>
+        <p id="imgHint" class="hint small"></p>
+      </div>
+
+      <label class="check" id="groupField">
+        <input type="checkbox" id="fGroup"> <span data-i18n="group.check"></span>
+      </label>
+
+      <label class="field" id="actionField">
+        <span data-i18n="action"></span>
+        <select id="fAction">
+          <option value="key" data-i18n="action.key"></option>
+          <option value="run" data-i18n="action.run"></option>
+        </select>
+      </label>
+
+      <div class="field" id="runField" hidden>
+        <input id="fRun" type="text" maxlength="400" data-i18n-ph="run.ph">
+        <button id="runBrowse" class="btn capture" type="button" data-i18n="run.browse" hidden></button>
+        <p id="runHint" class="hint small"></p>
+      </div>
+
+      <div class="field" id="keyField">
+        <span data-i18n="key"></span>
+        <div class="mods">
+          <label><input type="checkbox" id="mCtrl"> Ctrl</label>
+          <label><input type="checkbox" id="mShift"> Shift</label>
+          <label><input type="checkbox" id="mAlt"> Alt</label>
+        </div>
+        <select id="fKey"></select>
+        <p id="keyWarn" class="warn" hidden></p>
+        <button id="capBtn" class="btn capture" type="button"></button>
+      </div>
+
+      <div class="actions">
+        <button id="delBtn" class="btn danger" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg>
+          <span data-i18n="delete"></span>
+        </button>
+        <span class="spacer"></span>
+        <button id="cancelBtn" class="btn" type="button" data-i18n="cancel"></button>
+        <button class="btn primary" type="submit" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="lang-more.js"></script>
+  <script src="lang.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

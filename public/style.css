@@ -1,0 +1,398 @@
+:root {
+  --bg: #120b15;
+  --panel: #1d1222;
+  --panel-2: color-mix(in srgb, var(--panel) 91%, var(--accent-2));
+  --line: #4a2a52;
+  --text: #fdeef7;
+  --muted: color-mix(in srgb, var(--text) 72%, var(--line));
+  --accent: #ff4fa3;
+  --accent-2: #b46bff;
+  --pic: color-mix(in srgb, var(--panel) 82%, var(--accent-2));
+  --sel: #36e6ff;
+  --danger: #e5484d;
+  --radius: 16px;
+  --gap: 6px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 10px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.top h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.icon-btn .i-done { display: none; }
+body.editing .icon-btn { border-color: var(--accent); color: var(--accent); }
+body.editing .icon-btn .i-edit { display: none; }
+body.editing .icon-btn .i-done { display: block; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--gap);
+  padding: 6px 8px;
+}
+
+.tile {
+  --c: var(--accent);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 3px;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--c);
+  border-radius: 12px;
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.08s, background 0.08s;
+}
+
+.tile.group {
+  grid-column: 1 / -1;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 5px;
+  min-height: 0;
+  padding: 3px 6px 6px;
+  cursor: default;
+}
+
+.tile.group .name { color: var(--muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+body.editing .tile.group { cursor: pointer; }
+
+.subs { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.sub {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 44px;
+  min-height: 40px;
+  padding: 8px 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.08s, background 0.08s;
+}
+
+.sub-name { font-size: 14px; font-weight: 650; line-height: 1.15; text-align: center; overflow-wrap: anywhere; }
+.sub .bind { padding: 0; background: transparent; font-size: 11px; }
+.sub.on { transform: scale(0.95); border-color: var(--c); background: var(--c); }
+.sub.on .bind { color: #fff; }
+.sub.add { flex: 0 0 56px; min-width: 56px; border-style: dashed; background: transparent; color: var(--muted); }
+
+body.editing .sub { border-style: dashed; }
+
+.tile.on {
+  transform: scale(0.95);
+  background: var(--c);
+}
+
+.tile .name {
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.tile .bind {
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.tile.on .bind { background: rgba(0, 0, 0, 0.25); color: #fff; }
+.tile .bind.none { color: var(--danger); }
+
+body.editing .tile { border-style: dashed; border-top-style: solid; }
+
+.tile.add {
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line);
+  background: transparent;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.tile.add svg { width: 28px; height: 28px; }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translate(-50%, 20px);
+  max-width: calc(100% - 32px);
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+dialog {
+  width: min(420px, calc(100% - 32px));
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: var(--text);
+}
+
+dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+
+dialog h2 { margin: 0 0 14px; font-size: 18px; }
+
+.hint { margin: 0 0 12px; color: var(--muted); font-size: 14px; }
+
+[hidden] { display: none !important; }
+
+.field { display: block; margin-bottom: 16px; }
+.check { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 15px; }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); }
+.field > span { display: block; margin-bottom: 6px; color: var(--muted); font-size: 13px; }
+
+input[type="text"], input[type="password"], select {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, select:focus, .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+option.used, select.used { color: var(--danger); }
+select.used option:not(.used) { color: var(--text); }
+.warn { margin: 8px 0 0; color: var(--danger); font-size: 14px; }
+
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.swatch {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: var(--c);
+  cursor: pointer;
+}
+
+.swatch.sel { border-color: #fff; box-shadow: 0 0 0 2px var(--bg) inset; }
+
+.mods { display: flex; gap: 16px; margin-bottom: 10px; font-size: 15px; }
+.mods label { display: inline-flex; align-items: center; gap: 6px; }
+.mods input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+.actions { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.spacer { flex: 1; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel-2);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.btn svg { width: 18px; height: 18px; }
+.btn.primary { border-color: var(--accent); background: var(--accent); color: #fff; }
+.btn.danger { border-color: transparent; background: transparent; color: var(--danger); padding-left: 4px; }
+.btn.capture { width: 100%; margin-top: 10px; color: var(--muted); }
+.btn.capture.armed { border-color: var(--accent); color: var(--accent); }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* a bindek csak szerkesztes kozben latszanak, igy kisebb lehet a csempe; a hianyzo bind mindig latszik */
+body:not(.editing) .bind:not(.none) { display: none; }
+
+/* kepes csempe: a kep a gomb, a nev kis feliratkent alatta */
+.tile.has-img { align-items: center; gap: 1px; padding: 2px 4px 3px; background: linear-gradient(color-mix(in srgb, var(--c) 22%, var(--pic)), var(--pic) 75%); }
+.tile .pic { width: 100%; height: 50px; object-fit: contain; pointer-events: none; filter: brightness(1.45) contrast(1.05); }
+.tile.has-img .name {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile.has-img.on { background: var(--c); }
+.tile.has-img.on .name { color: #fff; }
+
+/* kepes kis gomb a csoportokban */
+.sub.has-img { gap: 0; padding: 3px 4px 4px; background: var(--pic); }
+.sub .pic { width: 100%; height: 34px; object-fit: contain; pointer-events: none; filter: brightness(1.45) contrast(1.05); }
+.sub.has-img .sub-name { color: var(--muted); font-size: 11px; font-weight: 600; }
+.sub.has-img.on { background: var(--c); }
+.sub.has-img.on .sub-name { color: #fff; }
+
+/* zold jeloles: ami epp ki van valasztva / be van kapcsolva */
+.tile.sel, .sub.sel {
+  border-color: var(--sel);
+  box-shadow: inset 0 0 0 2px var(--sel), 0 0 14px color-mix(in srgb, var(--sel) 60%, transparent);
+}
+.tile.sel:not(.on), .sub.sel:not(.on) { background: color-mix(in srgb, var(--sel) 20%, var(--bg)); }
+.tile.sel .name, .sub.sel .sub-name { color: #fff; }
+.tile.group .name.fix { align-self: flex-start; padding: 2px 10px 2px 0; cursor: pointer; }
+
+/* egygombos csoport (kapcsolo) fel szelessegu, igy ketto fer egy sorba */
+.tile.group.single { grid-column: span 2; }
+.sub.has-img .sub-name { font-size: 10.5px; }
+
+/* rozsaszin tema: halvany fenyudvar a gombok korul, szines cim */
+.top h1 { background: linear-gradient(90deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tile:not(.group):not(.add):not(.sel), .sub:not(.add):not(.sel) { box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 16%, transparent); }
+.tile.group { box-shadow: 0 0 14px color-mix(in srgb, var(--accent-2) 10%, transparent); }
+
+/* szinbeallitas ablak */
+.top { gap: 8px; }
+.top h1 { margin-right: auto; }
+.colors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-bottom: 16px; }
+.colorrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 14px; }
+input[type="color"] { flex: none; width: 46px; height: 32px; padding: 0; border: 1px solid var(--line); border-radius: 8px; background: none; cursor: pointer; }
+.toast.ok { background: #2e9e62; }
+
+input[type="range"] { width: 100%; margin: 4px 0 0; accent-color: var(--accent); }
+.field > span b { color: var(--text); }
+
+/* jatekprofil valaszto a fejlecben */
+.game-sel { flex: 0 1 170px; width: auto; min-width: 0; padding: 6px 8px; font-size: 14px; }
+.tile.gamebar { grid-column: 1 / -1; min-height: 40px; flex-direction: row; font-size: 13px; }
+@media (max-width: 480px) {
+  #editLabel { display: none; }
+  .top h1 { font-size: 16px; }
+}
+
+/* kepvalaszto a szerkesztoben */
+.imgs { display: flex; flex-wrap: wrap; gap: 6px; max-height: 176px; overflow-y: auto; }
+.imgpick {
+  display: flex; align-items: center; justify-content: center;
+  width: 56px; height: 52px; padding: 3px;
+  border: 2px solid var(--line); border-radius: 10px;
+  background: var(--pic); color: var(--muted); font: inherit; font-size: 12px; cursor: pointer;
+}
+.imgpick img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.imgpick.sel { border-color: var(--sel); }
+.hint.small { margin: 8px 0 0; font-size: 12px; overflow-wrap: anywhere; }
+
+/* beallitasok ablak, nyelvvalaszto, lablec */
+dialog { max-height: calc(100% - 24px); overflow-y: auto; }
+dialog h3 { margin: 4px 0 12px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 15px; }
+.connect h3 { margin-top: 0; padding-top: 0; border-top: 0; }
+.connect { margin-bottom: 16px; }
+.connect-row { display: flex; gap: 14px; align-items: center; }
+.connect-text p { margin: 0 0 6px; font-size: 14px; overflow-wrap: anywhere; }
+.qr { flex: none; width: 132px; height: 132px; padding: 6px; border-radius: 10px; background: #fff; }
+.qr svg { display: block; width: 100%; height: 100%; stroke-width: 1; stroke-linecap: butt; stroke-linejoin: miter; }
+.lang-btns { display: grid; gap: 8px; }
+.lang-btns .btn { padding: 14px; font-size: 17px; }
+.foot { padding: 6px 10px 14px; color: var(--muted); font-size: 11px; text-align: center; opacity: 0.7; }
+
+/* telefon csatlakoztatasa ablak */
+.connect .qr { width: 220px; height: 220px; margin: 0 auto 14px; }
+.connect p { margin: 0 0 8px; overflow-wrap: anywhere; }
+.connect b { font-size: 17px; }
+
+/* az ablakok gombsora mindig latszik, akkor is, ha a tartalom gorgetheto */
+dialog .actions {
+  position: sticky;
+  bottom: -20px;
+  margin: 12px -20px -20px;
+  padding: 12px 20px 20px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+.lang-btns { grid-template-columns: 1fr 1fr; }
+#fRun:disabled { opacity: 0.6; }
